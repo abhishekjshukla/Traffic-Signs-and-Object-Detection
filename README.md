@@ -1,11 +1,11 @@
 # Requirements
 
-*Darkflow
-*Tensorflow
-*Numpy
-*OpenCV
-*Pygame
-*playsound
+* Darkflow
+* Tensorflow
+* Numpy
+* OpenCV
+* Pygame
+* playsound
 
 #Installation
 
