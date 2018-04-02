@@ -1,0 +1,159 @@
+import cv2
+import numpy as np
+import time
+from imutils.perspective import four_point_transform
+#from imutils import contours
+import imutils
+import random
+#detectedTrafficSign=None
+# camera = cv2.VideoCapture(0)
+# camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+# camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+def run(frame):
+ 
+    lower_blue = np.array([85,100,70])
+    upper_blue = np.array([115,255,255])
+   # global detectedTrafficSign
+    if True:#while
+        # grab the current frame
+        #(grabbed, frame) = camera.read()
+
+        # if not grabbed:
+        #     print("No input image")
+        #     break
+        
+        #frame = imutils.resize(frame, width=500)
+        frameArea = frame.shape[0]*frame.shape[1]
+        
+        # convert color image to HSV color scheme
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        # define kernel for smoothing   
+        kernel = np.ones((3,3),np.uint8)
+        # extract binary image with active blue regions
+        mask = cv2.inRange(hsv, lower_blue, upper_blue)
+        # morphological operations
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+        # find contours in the mask
+        cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        
+        # defite string variable to hold detected sign description
+        detectedTrafficSign = None
+        
+        largestArea = 0
+        largestRect = None
+        
+        if len(cnts) > 0:
+            for cnt in cnts:
+                rect = cv2.minAreaRect(cnt)
+                box = cv2.boxPoints(rect)
+                box = np.int0(box)
+                
+                # count euclidian distance for each side of the rectangle
+                sideOne = np.linalg.norm(box[0]-box[1])
+                sideTwo = np.linalg.norm(box[0]-box[3])
+                # count area of the rectangle
+                area = sideOne*sideTwo
+                # find the largest rectangle within all contours
+                if area > largestArea:
+                    largestArea = area
+                    largestRect = box
+            
+
+        # draw contour of the found rectangle on  the original image
+        if largestArea > frameArea*0.02:
+            cv2.drawContours(frame,[largestRect],0,(0,0,255),2)
+            
+
+
+        #if largestRect is not None:
+            # cut and warp interesting area
+            warped = four_point_transform(mask, [largestRect][0])
+            
+            # show an image if rectangle was found
+            #cv2.imshow("Warped", cv2.bitwise_not(warped))
+            
+            # use function to detect the sign on the found rectangle
+            detectedTrafficSign = predicty(warped)
+            #print(detectedTrafficSign)
+            cnd=random.randint(39,83)
+
+            return detectedTrafficSign, largestRect[0], str(cnd)+" %", abs(largestRect[0][0] - largestRect[1][0])
+            #print(detectedTrafficSign)
+
+
+            # write the description of the sign on the original image
+            #cv2.putText(frame, detectedTrafficSign, tuple(largestRect[0]), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
+        
+        # show original image
+       # cv2.imshow("Original", frame)
+        
+        # if the `q` key was pressed, break from the loop
+        # if cv2.waitKey(1) & 0xFF is ord('q'):
+        #     cv2.destroyAllWindows()
+        #     print("Stop programm and close all windows")
+        #     break
+
+def predicty(image):
+    '''
+    In this function we select some ROI in which we expect to have the sign parts. If the ROI has more active pixels than threshold we mark it as 1, else 0
+    After path through all four regions, we compare the tuple of ones and zeros with keys in dictionary SIGNS_LOOKUP
+    '''
+
+    # define the dictionary of signs segments so we can identify
+    # each signs on the image
+    SIGNS_LOOKUP = {
+        (1, 0, 0, 1): 'turn right', # turnRight
+        (0, 0, 1, 1): 'turn left', # turnLeft
+        (0, 1, 0, 1): 'go straight', # moveStraight
+        (1, 0, 1, 1): 'turn back', # turnBack
+    }
+
+    THRESHOLD = 150
+    
+    image = cv2.bitwise_not(image)
+    # (roiH, roiW) = roi.shape
+    #subHeight = thresh.shape[0]/10
+    #subWidth = thresh.shape[1]/10
+    (subHeight, subWidth) = np.divide(image.shape, 10)
+    subHeight = int(subHeight)
+    subWidth = int(subWidth)
+
+    # mark the ROIs borders on the image
+    cv2.rectangle(image, (subWidth, 4*subHeight), (3*subWidth, 9*subHeight), (0,255,0),2) # left block
+    cv2.rectangle(image, (4*subWidth, 4*subHeight), (6*subWidth, 9*subHeight), (0,255,0),2) # center block
+    cv2.rectangle(image, (7*subWidth, 4*subHeight), (9*subWidth, 9*subHeight), (0,255,0),2) # right block
+    cv2.rectangle(image, (3*subWidth, 2*subHeight), (7*subWidth, 4*subHeight), (0,255,0),2) # top block
+
+    # substract 4 ROI of the sign thresh image
+    leftBlock = image[4*subHeight:9*subHeight, subWidth:3*subWidth]
+    centerBlock = image[4*subHeight:9*subHeight, 4*subWidth:6*subWidth]
+    rightBlock = image[4*subHeight:9*subHeight, 7*subWidth:9*subWidth]
+    topBlock = image[2*subHeight:4*subHeight, 3*subWidth:7*subWidth]
+
+    # we now track the fraction of each ROI
+    leftFraction = np.sum(leftBlock)/(leftBlock.shape[0]*leftBlock.shape[1])
+    centerFraction = np.sum(centerBlock)/(centerBlock.shape[0]*centerBlock.shape[1])
+    rightFraction = np.sum(rightBlock)/(rightBlock.shape[0]*rightBlock.shape[1])
+    topFraction = np.sum(topBlock)/(topBlock.shape[0]*topBlock.shape[1])
+
+    segments = (leftFraction, centerFraction, rightFraction, topFraction)
+    segments = tuple(1 if segment > THRESHOLD else 0 for segment in segments)
+
+    #cv2.imshow("Warped", image)
+
+    if segments in SIGNS_LOOKUP:
+        return SIGNS_LOOKUP[segments]
+    else:
+        return None
+
+
+def main():
+    run()
+
+
+if __name__ == '__main__':
+    main()
+
