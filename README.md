@@ -1,11 +1,20 @@
 # Requirements
 
-* Darkflow
-* Tensorflow
-* Numpy
-* OpenCV
-* Pygame
+* Darkflow - https://github.com/thtrieu/darkflow
+* Tensorflow - https://tensorflow.org
+* Numpy - https://numpy.org
+* OpenCV - https://opencv.org
+* Pygame - https://pygame.org
+* Geocoder
+`pip3 install geocoder`
 * playsound
+`pip3 install playsound`
+* GooMPy
+`git clone https://github.com/simondlevy/GooMPy`
+* PyOwm Weather API
+`pip3 install pyowm`
+After instllation of pyowm, You would require an API Key which can be generated from the [Official Website](https://home.openweathermap.org/users/sign_up) For more information on PyOwm check out [csparpa/pyown](https://github.com/csparpa/pyowm).
+
 
 # Installation
 
