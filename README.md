@@ -17,3 +17,10 @@ After installing the requirements, just download a pretarined weights and its co
 ![Car Detection](https://github.com/dark-archerx/Traffic-Signs-and-Object-Detection/blob/master/images/Screen%20Shot%202018-03-31%20at%205.56.00%20pm.png)
 
 
+Geocoder
+
+pyown enter Key in line 127
+
+goompy
+
+playsound
