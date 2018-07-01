@@ -5,13 +5,13 @@ We attempt to make Traffic Sign and Object detection using YOLO(You-Only-Look-On
 - More About YOLO: [Darknet/YOLO](https://pjreddie.com/darknet/yolo/)
 - GitHub: [thtrieu/darkflow](https://github.com/thtrieu/darkflow)
 
-This Project was submitted in **Smart India Hackathon 2018**.
+This Project was submitted in **Smart India Hackathon 2018** under team name: 6_Pixels.
 
-Along with Object Detection our model has been designed with easy to use and navigate interface (User Interface) using PYGAME library of Python.
+Along with Object Detection our model has been designed with easy to use and navigate interface (User Interface) using PYGAME library of Python. The Model also has the capability to notify user about the Traffic Signs and Vehicles using Speech. The speech is available in 4 Languages at the moment namely: English, Hindi, Bangali, Marathi.
 
 Also we have attempted to add the feature of Fatigue detection of the driver based on closing of eye using HaarCascades of OpenCV. If the driver's eyes remain closed for a long time, the alarm starts to ring to wake the driver up.
 
-The model also has the capability to estimate the distance of vehicle in front of it thus setting a stepping stone towards self-driving cars.
+The model also has the capability to estimate the distance of vehicle in front of it thus setting a stepping stone towards self-driving cars. Also you can view Map and Weather Condition in the User Interface. Below are some results and Screenshots of the  final project.
 
 # Usage
 
