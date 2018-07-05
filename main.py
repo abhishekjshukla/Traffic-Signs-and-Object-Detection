@@ -117,14 +117,14 @@ def getCity():
     global city
     g = geocoder.ip('me')
     city = g.city
-    
-    
+
+
 def weather():
     lat, lan = getLatLan()
     if not lat:
         return 0, 0, 0, "- -"
     else:
-        owm = pyowm.OWM('c84c2f255787c9dfc3d1c8b3795e4686')
+        owm = pyowm.OWM('ENTER KEY HERE')
         observation = owm.weather_at_coords(lat, lan)
         w = observation.get_weather()
         tmp = w.get_temperature('celsius')
@@ -163,7 +163,7 @@ def getMonth(mon):
         return "Nov"
     if mon == 12:
         return "Dec"
-    
+
 def getWeekDate(now):
     date = datetime.date(now.year, now.month, now.day)
     weekDay = date.isoweekday()
@@ -190,7 +190,7 @@ def getWeekDate(now):
 def getMap():
     global mapCurr
 
-    mapOffline = pygame.image.load("offline.jpg")
+    mapOffline = pygame.image.load("icons/offline.jpg")
 
     lat, lan = getLatLan()
     if not lat:
@@ -199,7 +199,7 @@ def getMap():
     try:
         goompy = GooMPy(mapW, mapH, lat, lan, 20, 'roadmap')
         image = goompy.getImage()
-    
+
         mapCurr = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
     except Exception as e:
         mapCurr = mapOffline
@@ -207,21 +207,21 @@ class Button:
     def __init__(self, x, y, w, h, action=None, shape="rect", origin="normal"):
         self.x = x
         self.y = y
-        self.w = w
+        self.w = wplaysound
         self.h = h
         self.color = black
         self.activeColor = black
         self.action = action
-        
+
         self.fontColor = None
         self.text = []
         self.font = None
         self.shape = shape
-        
+
         self.image = None
         self.imagePos = None
-        
-        self.origin = origin        
+
+        self.origin = origin
 
     def addText(self, text, pos, fontColor=black, size=15, font="Times New Roman", char="\n", align="centre"):
         self.fontColor = fontColor
@@ -234,7 +234,7 @@ class Button:
         else:
             x = self.x
             y = self.y
-        
+
         for sent in text:
             textSurface, textPos = textObj(sent, self.font, self.fontColor)
             if align == "centre":
@@ -242,7 +242,7 @@ class Button:
             elif align == "left":
                 textPos = (x + pos[0], y + pos[1] + len(self.text)*size)
             self.text.append([textSurface, textPos])
-    
+
     def draw(self):
         pos = pygame.mouse.get_pos()
         if self.origin == "centre":
@@ -256,17 +256,17 @@ class Button:
             color = self.activeColor
         else:
             color = self.color
-            
+
         if self.shape == "ellipse":
             pygame.draw.ellipse(display, color, (x, y, self.w, self.h))
-        else:    
+        else:
             pygame.draw.rect(display, color, (x, y, self.w, self.h))
         if not (self.font == None):
             for sent in self.text:
                 display.blit(sent[0], sent[1])
         if not (self.image == None):
             display.blit(self.image, self.imagePos)
-            
+
     def isActive(self):
         pos = pygame.mouse.get_pos()
         if self.origin == "centre":
@@ -275,7 +275,7 @@ class Button:
         else:
             x = self.x
             y = self.y
-        
+
         if x <= pos[0] <= x + self.w and y <= pos[1] <= y + self.h:
             return True
         return False
@@ -305,7 +305,7 @@ def GUI():
     cnt=0
     global mapCurr, frame, closestLabel,lang
     loop = True
-    
+
     confidence = 0
 
     tempt, hum, wind, status = weather()
@@ -320,7 +320,7 @@ def GUI():
     font16 = pygame.font.SysFont("Franklin Gothic Medium Cond", 16)
     font36 = pygame.font.SysFont("Franklin Gothic Heavy", 36)
     font32 = pygame.font.SysFont("Franklin Gothic Heavy", 32)
-    
+
 
     threading.Timer(1, getCity).start()
     label = "Human"
@@ -340,14 +340,14 @@ def GUI():
     english = Button(1000, 110, 180, 50, eng)
     marathi = Button(1000, 170, 180, 50, mar)
     bangali = Button(1000, 230, 180, 50, bang)
-    
+
     hindi.addText("Hindi", (0, 0), (200, 200, 200), 20)
     english.addText("English", (0, 0), (200, 200, 200), 20)
     marathi.addText("Marathi", (0, 0), (200, 200, 200), 20)
     bangali.addText("Bengali", (0, 0), (200, 200, 200), 20)
 
-    advt = pygame.image.load('advt.png')
-    
+    advt = pygame.image.load('icons/advt.png')
+
     while loop:
         cnt=0
         for event in pygame.event.get():
@@ -368,7 +368,7 @@ def GUI():
                     lang = 3
 
 
-            
+
         #_, frame = videoFeed.read()
         stime = time.time()
         label = "--"
@@ -378,7 +378,7 @@ def GUI():
 
         closestLabel = None
         closestDist = float('inf')
-        
+
         if 1:
            for color, result in zip(colors, results):
                tl = (result['topleft']['x'], result['topleft']['y'])
@@ -399,7 +399,7 @@ def GUI():
                    txt2 = '{}: {:.0f}% : Dist: {:.01f}cm'.format(a[0], confidence * 100, dist/10)
                    frame = cv2.putText(
                     frame, txt2, tuple(a[1]), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 100, 200), 2)
-       
+
                if(confidence*100>0 and (label in rec)):
                    text = '{}: {:.0f}%'.format(label, confidence * 100)
                    frame = cv2.rectangle(frame, tl, br, color, 5)
@@ -419,19 +419,19 @@ def GUI():
                    text = '{}: {:.0f}% : Dist: {:.0f}cm'.format(label, confidence * 100, dist/10)
                    frame = cv2.putText(
                     frame, text, tl, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 100, 200), 1)
-               
 
 
-                
+
+
         image = cv2.resize(frame, (vWidth, vHeight), interpolation=cv2.INTER_LINEAR)
-                  
+
         #speak_thr.join()
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = np.rot90(image)
         image = np.flip(image, 0)
         image = pygame.surfarray.make_surface(image)
-        
+
         display.fill((0, 0, 0))
 
         #Live Feed
@@ -445,7 +445,7 @@ def GUI():
 
         if not closestLabel or (closestLabel == "person"):
           confidence = 0
-          
+
 
         points = [(0, 0), (0, 80), (6, 80), (6, 0)]
         coords = []
@@ -453,7 +453,7 @@ def GUI():
         for point in points:
             coords.append(translate(600, 145, rotate(point, radians(angle), (3, 0))))
 
-        
+
         pygame.draw.line(display, (91, 154, 213), (602.3164801755993, 149.43101789615605), (669.5063982331376, 187.59807621135332), 2)
         pygame.draw.line(display, (91, 154, 213), (529.217967697245, 187.40192378864668), (602.3164801755993, 149.43101789615605), 2)
 
@@ -471,7 +471,7 @@ def GUI():
 
         text = font24.render(str("Do This Action"), True, (255, 255, 255))
         display.blit(text, (730, 140))
-        
+
         if closestLabel in vehicles:
           dist = closestDist
         else:
