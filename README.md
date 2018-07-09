@@ -17,7 +17,7 @@ The model also has the capability to estimate the distance of vehicle in front o
 
 Clone the repository to your local machine
 
-`git clone https://github.com/jatinmandav/Traffic-Signs-and-Object-Detection`
+`git clone https://github.com/dark-archerx/Traffic-Signs-and-Object-Detection`
 
 Navigate to the Directory
 
